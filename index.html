@@ -2,364 +2,387 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>EduZone | Google Sheet Backend</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodRide | রেস্তোরাঁ & রাইডার লগিন + গুগল শীট</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        :root { --primary: #5e3fd7; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #f4f7fc; font-family: 'Segoe UI', sans-serif; }
-        .main-header { background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top:0; z-index:1000; }
-        .header-wrapper { padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin: auto; flex-wrap: wrap; }
-        .logo { font-size: 1.5rem; font-weight: bold; cursor: pointer; color: var(--primary); }
-        .nav-menu { display: flex; gap: 2rem; list-style: none; margin:0; align-items: center; }
-        .nav-menu a { text-decoration: none; color: #1e293b; font-weight: 500; cursor: pointer; }
-        .btn-enroll { background: linear-gradient(105deg, var(--primary), #3a2a8c); color: white; padding: 8px 24px; border-radius: 40px; }
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 28px; cursor: pointer; }
-        .hero-banner { background: linear-gradient(135deg, var(--primary), #3a2a8c); padding: 60px 0; }
-        .hero-content { background: rgba(4,4,83,0.8); backdrop-filter: blur(6px); border-radius: 32px; padding: 2rem; text-align: center; color: white; }
-        .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 1.5rem; margin: 40px 0; }
-        .course-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .course-img { width: 100%; height: 170px; object-fit: cover; }
-        .auth-section { padding: 60px 0; background: #f8fafc; }
-        .auth-card { background: white; border-radius: 28px; padding: 2rem; max-width: 500px; margin: 0 auto; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1); }
-        .form-group { position: relative; margin-bottom: 24px; }
-        .form-group input { width: 100%; padding: 14px 16px; border: 1.5px solid #e2e8f0; border-radius: 18px; outline: none; }
-        .form-group label { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); background: white; padding: 0 6px; color: #64748b; transition: 0.2s; pointer-events: none; }
-        .form-group input:focus ~ label, .form-group input:not(:placeholder-shown) ~ label { top: 0; font-size: 0.75rem; color: var(--primary); }
-        .btn-submit { background: linear-gradient(105deg, var(--primary), #3a2a8c); width: 100%; padding: 12px; border: none; border-radius: 50px; color: white; font-weight: 700; cursor: pointer; }
-        .credential-box { background: #eef2ff; padding: 12px; border-radius: 16px; margin-top: 20px; border-left: 4px solid var(--primary); }
-        .dashboard-layout { display: flex; min-height: 100vh; background: #f0f2f8; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #1a1c2b 0%, #0f111e 100%); color: #e0e0e0; position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; transition: 0.3s; }
-        .sidebar .brand { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: bold; }
-        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
-        .sidebar-nav li a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: #cbd5e6; text-decoration: none; cursor: pointer; }
-        .sidebar-nav li a:hover { background: rgba(94,63,215,0.25); color: white; }
-        .main-content { margin-left: 280px; flex: 1; padding: 20px 30px; transition: 0.3s; }
-        .dashboard-header { background: white; padding: 12px 20px; border-radius: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .stat-card { background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 5px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .badge-activated { background: #10b981; color: white; padding: 6px 14px; border-radius: 30px; }
-        .badge-inactive { background: #ef4444; color: white; padding: 6px 14px; border-radius: 30px; }
-        .activation-banner { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .content-section { display: none; }
-        .content-section.active { display: block; }
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.mobile-open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .nav-menu { display: none; }
-            .mobile-menu-btn { display: block; }
-        }
-        .page-home, .page-student-login, .page-student-signup, .page-admin-login, .page-student-dashboard, .page-admin-panel { display: none; }
-        .active-page { display: block !important; }
-        .toast-custom { position: fixed; bottom: 30px; right: 30px; background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; z-index: 2000; transform: translateX(400px); transition: 0.3s; }
-        .toast-custom.show { transform: translateX(0); }
-        footer { background: #0f172a; color: #cbd5e6; padding: 40px 0 20px; margin-top: 40px; text-align: center; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: #f1f2f6; scroll-behavior: smooth; }
+        :root { --primary: #ff4757; --dark: #2f3542; --light: #f1f2f6; --success: #2ed573; }
+        header { background: white; padding: 14px 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); flex-wrap: wrap; }
+        .logo { font-size: 28px; font-weight: 800; color: var(--dark); }
+        .logo span { color: var(--primary); }
+        nav ul { display: flex; gap: 20px; list-style: none; }
+        nav ul li a { text-decoration: none; font-weight: 600; color: var(--dark); }
+        .user-welcome { background: var(--light); padding: 6px 18px; border-radius: 40px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .hero { min-height: 60vh; background: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1600&q=80'); background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 30px 20px; }
+        .hero h1 { font-size: 2rem; margin-bottom: 10px; }
+        .search-area { background: white; border-radius: 60px; display: flex; max-width: 600px; width: 100%; margin-top: 15px; }
+        .search-area input { flex:1; border:none; padding: 12px 20px; border-radius: 60px; outline: none; }
+        .search-area button { background: var(--primary); color: white; border: none; padding: 12px 28px; border-radius: 60px; cursor: pointer; }
+        .container { padding: 40px 8%; }
+        .section-title { text-align: center; font-size: 1.8rem; margin-bottom: 25px; }
+        .food-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 25px; }
+        .food-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.2s; }
+        .food-img { width: 100%; height: 170px; object-fit: cover; }
+        .food-info { padding: 16px; }
+        .price { font-weight: 800; margin: 8px 0; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+        .old-price { text-decoration: line-through; color: #aaa; font-size: 0.9rem; }
+        .new-price { color: var(--primary); font-size: 1.2rem; }
+        .combo-badge { background: #ffa502; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-left: 8px; }
+        .order-btn { width: 100%; background: var(--dark); color: white; border: none; padding: 10px; border-radius: 40px; font-weight: bold; cursor: pointer; }
+        .cart-sidebar { position: fixed; top:0; right:-400px; width: 380px; height: 100vh; background: white; z-index: 1100; transition: 0.3s; box-shadow: -5px 0 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .cart-sidebar.open { right:0; }
+        .cart-header { background: var(--dark); color: white; padding: 18px; display: flex; justify-content: space-between; }
+        .cart-items { flex:1; overflow-y: auto; padding: 20px; }
+        .cart-total { padding: 20px; border-top: 1px solid #ddd; }
+        .checkout-btn { width: 100%; background: var(--primary); border: none; padding: 12px; border-radius: 40px; color: white; font-weight: bold; cursor: pointer; }
+        .cart-icon-fixed { position: fixed; bottom: 28px; right: 28px; background: var(--primary); width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1020; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+        .cart-icon-fixed span { position: absolute; top:-5px; right:-5px; background: var(--dark); color: white; border-radius: 30px; padding: 2px 8px; font-size: 13px; }
+        footer { background: var(--dark); color: white; text-align: center; padding: 20px; margin-top: 30px; }
+        .toast-msg { position: fixed; bottom: 100px; left: 20px; background: #2f3542; color: white; padding: 12px 22px; border-radius: 40px; z-index: 1200; opacity: 0; transition: 0.2s; pointer-events: none; }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-card { background: white; width: 90%; max-width: 550px; border-radius: 32px; padding: 25px; max-height: 85vh; overflow-y: auto; }
+        .modal-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 60px; border: 1px solid #ddd; outline: none; }
+        .submit-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 60px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: bold; }
+        .panel-buttons { display: flex; gap: 12px; justify-content: center; margin: 20px 8% 0; flex-wrap: wrap; }
+        .panel-btn { background: var(--dark); color: white; border: none; padding: 12px 24px; border-radius: 40px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .panel-btn.restaurant { background: #2c3e66; }
+        .panel-btn.rider { background: #27ae60; }
+        .restaurant-tabs, .rider-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+        .restaurant-tab, .rider-tab { padding: 10px 20px; cursor: pointer; background: none; border: none; font-weight: 600; }
+        .restaurant-tab.active, .rider-tab.active { border-bottom: 3px solid var(--primary); color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .status-closed { background: #ffebee; color: #c62828; padding: 8px; border-radius: 40px; text-align: center; margin-bottom: 15px; font-weight: bold; }
+        @media (max-width: 700px) { nav ul { display: none; } .cart-sidebar { width: 320px; } }
     </style>
 </head>
 <body>
 
-<!-- PUBLIC HEADER -->
-<div class="main-header" id="mainHeader">
-    <div class="header-wrapper">
-        <div class="logo" onclick="showPage('home')">EduZone</div>
-        <ul class="nav-menu">
-            <li><a class="nav-link" data-page="home">হোম</a></li>
-            <li><a class="nav-link" data-page="student-login">ছাত্র লগইন</a></li>
-            <li><a class="nav-link" data-page="admin-login">অ্যাডমিন</a></li>
-            <li><a class="btn-enroll nav-link" data-page="student-signup">এনরোল</a></li>
-        </ul>
-        <button class="mobile-menu-btn" id="mobileMenuToggle"><i class="fas fa-bars"></i></button>
-    </div>
+<header>
+    <div class="logo">Food<span>Ride</span></div>
+    <nav><ul><li><a href="#">হোম</a></li><li><a href="#menu">মেনু</a></li><li><a href="#" id="offersLink">অফার</a></li></ul></nav>
+    <div class="user-welcome" id="userWelcomeArea"><i class="fas fa-user-circle"></i><span id="displayUserName">অতিথি</span><i class="fas fa-chevron-down"></i></div>
+</header>
+
+<section class="hero">
+    <h1>রেস্তোরাঁ & রাইডার লগিন + গুগল শীট সংযুক্ত</h1>
+    <p>নিচের বাটনে ক্লিক করে প্যানেলে লগিন করুন | সব ডাটা শীটে সেভ হবে</p>
+    <div class="search-area"><input type="text" id="locationInput" placeholder="আপনার এলাকা"><button onclick="searchFood()">সার্চ</button></div>
+</section>
+
+<div class="container" id="menu">
+    <h2 class="section-title">🍕 আজকের মেনু</h2>
+    <div id="restaurantStatusBanner" class="status-closed" style="display:none;"></div>
+    <div class="food-grid" id="foodGrid"></div>
 </div>
 
-<!-- PAGES -->
-<div class="page-home active-page" id="homePage">
-    <section class="hero-banner"><div class="container"><div class="hero-content"><h2>গুগল শীট ব্যাকএন্ড সহ সম্পূর্ণ সিস্টেম</h2><p>পাসওয়ার্ড হ্যাশড, ডাটা নিরাপদ</p><div class="mt-4"><a class="btn btn-light nav-link" data-page="student-login">লগইন</a> <a class="btn btn-outline-light nav-link" data-page="student-signup">রেজিস্ট্রেশন</a></div></div></div></section>
-    <div class="container"><div class="credential-box"><strong>ডেমো:</strong> ছাত্র (পূর্বে রেজিস্টার করুন) | <strong>অ্যাডমিন:</strong> admin@eduzone.com / admin123</div></div>
+<!-- Cart Sidebar -->
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header"><h3><i class="fas fa-shopping-bag"></i> অর্ডার ঝুড়ি</h3><button id="closeCartBtn" style="background:none; border:none; color:white; font-size:28px;">&times;</button></div>
+    <div class="cart-items" id="cartItemsContainer"></div>
+    <div class="cart-total"><p>মোট: <span id="cartTotalPrice">০ ৳</span></p><button class="checkout-btn" id="proceedToPaymentBtn">অর্ডার করুন →</button></div>
+</div>
+<div class="cart-icon-fixed" id="cartIcon"><i class="fas fa-shopping-cart"></i><span id="cartCount">0</span></div>
+<div id="toastMsg" class="toast-msg"></div>
+
+<div class="panel-buttons">
+    <button class="panel-btn restaurant" id="restaurantPanelBtn"><i class="fas fa-utensils"></i> রেস্তোরাঁ প্যানেল (লগিন)</button>
+    <button class="panel-btn rider" id="riderPanelBtn"><i class="fas fa-motorcycle"></i> রাইডার প্যানেল (লগিন)</button>
 </div>
 
-<div class="page-student-login" id="studentLoginPage"><div class="auth-section"><div class="container"><div class="auth-card"><h3 class="text-center">ছাত্র লগইন</h3><form id="loginForm"><div class="form-group"><input type="email" id="loginEmail" placeholder=" "><label>ইমেইল</label></div><div class="form-group"><input type="password" id="loginPassword" placeholder=" "><label>পাসওয়ার্ড</label></div><button class="btn-submit">প্রবেশ</button></form></div></div></div></div>
+<footer><p><i class="fas fa-heart"></i> FoodRide - ডাটা গুগল শীটে সংরক্ষিত</p></footer>
 
-<div class="page-student-signup" id="studentSignupPage"><div class="auth-section"><div class="container"><div class="auth-card"><h3 class="text-center">নিবন্ধন</h3><form id="signupForm"><div class="form-group"><input type="text" id="signupName" placeholder=" "><label>পূর্ণ নাম</label></div><div class="form-group"><input type="email" id="signupEmail" placeholder=" "><label>ইমেইল</label></div><div class="form-group"><input type="password" id="signupPassword" placeholder=" "><label>পাসওয়ার্ড</label></div><div class="form-group"><input type="text" id="refCode" placeholder=" "><label>রেফারেল কোড (ঐচ্ছিক)</label></div><button class="btn-submit">সাইন আপ</button></form><div id="signupMsg" class="mt-2 text-center small"></div></div></div></div></div>
+<!-- Payment & Location Modals -->
+<div id="paymentModal" class="modal-overlay"><div class="modal-card"><h3>পেমেন্ট মেথড</h3><div id="paymentOptions"><div class="payment-option" data-method="cash">নগদ</div><div class="payment-option" data-method="bkash">bKash</div><div class="payment-option" data-method="card">কার্ড</div></div><button id="nextToLocationBtn" class="submit-btn">পরবর্তী</button></div></div>
+<div id="locationModal" class="modal-overlay"><div class="modal-card"><h3>ডেলিভারি ঠিকানা</h3><button id="getGpsBtn" class="submit-btn" style="background:#2f3542;">জিপিএস লোকেশন</button><input type="text" id="manualAddress" class="location-input" placeholder="ঠিকানা লিখুন"><button id="confirmLocationBtn" class="submit-btn">অর্ডার কনফার্ম</button></div></div>
+<div id="trackingModal" class="modal-overlay"><div class="modal-card"><h3>অর্ডার ট্র্যাকিং</h3><div id="orderStatusContainer"></div><button id="closeTrackingBtn" class="submit-btn">বন্ধ করুন</button></div></div>
 
-<div class="page-admin-login" id="adminLoginPage"><div class="auth-section"><div class="container"><div class="auth-card"><h3 class="text-center">অ্যাডমিন লগইন</h3><form id="adminLoginForm"><div class="form-group"><input type="text" id="adminEmail" placeholder=" "><label>অ্যাডমিন ইমেইল</label></div><div class="form-group"><input type="password" id="adminPassword" placeholder=" "><label>পাসওয়ার্ড</label></div><button class="btn-submit">প্রবেশ</button></form><div class="credential-box">admin@eduzone.com / admin123</div></div></div></div></div>
+<!-- Restaurant Login Modal -->
+<div id="restaurantLoginModal" class="modal-overlay"><div class="modal-card"><h3>রেস্তোরাঁ লগিন</h3><div class="form-group"><label>আইডি (ইমেইল)</label><input type="text" id="restaurantId" placeholder="restaurant@foodride.com"></div><div class="form-group"><label>পাসওয়ার্ড</label><input type="password" id="restaurantPassword" placeholder="******"></div><button id="doRestaurantLoginBtn" class="submit-btn">লগিন করুন</button></div></div>
 
-<!-- STUDENT DASHBOARD -->
-<div class="page-student-dashboard" id="studentDashboardPage">
-    <div class="dashboard-layout">
-        <div class="sidebar" id="studentSidebar">
-            <div class="brand">📘 ছাত্র প্যানেল</div>
-            <ul class="sidebar-nav">
-                <li><a href="#" onclick="showStudentSection('home')"><i class="fas fa-home"></i> হোম</a></li>
-                <li><a href="#" onclick="showStudentSection('profile')"><i class="fas fa-user"></i> প্রোফাইল</a></li>
-                <li><a href="#" onclick="showStudentSection('courses')"><i class="fas fa-book"></i> কোর্স</a></li>
-                <li><a href="#" onclick="showStudentSection('referral')"><i class="fas fa-link"></i> রেফারেল</a></li>
-                <li><a href="#" onclick="showStudentSection('withdraw')"><i class="fas fa-hand-holding-usd"></i> উইথড্র</a></li>
-                <li><a href="#" id="studentLogoutBtn"><i class="fas fa-sign-out-alt"></i> লগআউট</a></li>
-            </ul>
-        </div>
-        <div class="main-content">
-            <div class="dashboard-header"><h5 id="welcomeName"></h5><div><span id="activationBadge"></span></div></div>
-            <div id="activationBanner" class="activation-banner" style="display:none;"><span>আইডি নিষ্ক্রিয়। অ্যাক্টিভেট করুন!</span><button id="activateBtn" class="btn btn-warning btn-sm">অ্যাক্টিভেট</button></div>
-            <div id="studentContent"></div>
-        </div>
-    </div>
-</div>
+<!-- Restaurant Panel Modal (after login) -->
+<div id="restaurantPanelModal" class="modal-overlay"><div class="modal-card" style="max-width:650px;"><h3><i class="fas fa-store"></i> রেস্তোরাঁ প্যানেল</h3><div class="restaurant-tabs"><button class="restaurant-tab active" data-tab="orders">📋 অর্ডার</button><button class="restaurant-tab" data-tab="time">⏰ সময়</button><button class="restaurant-tab" data-tab="products">➕ প্রোডাক্ট</button><button class="restaurant-tab" data-tab="list">📦 আমার প্রোডাক্ট</button></div><div id="tabOrders" class="tab-content active"><div id="restaurantOrdersList">লোডিং...</div></div><div id="tabTime" class="tab-content"><div class="form-group"><label>খোলার সময়</label><input type="time" id="openTimeInput"></div><div class="form-group"><label>বন্ধের সময়</label><input type="time" id="closeTimeInput"></div><button id="saveTimeBtn" class="submit-btn">সেভ করুন</button></div><div id="tabProducts" class="tab-content"><div class="form-group"><label>নাম</label><input type="text" id="prodName"></div><div class="form-group"><label>মূল্য</label><input type="number" id="prodPrice"></div><div class="form-group"><label>ছবি URL</label><input type="text" id="prodImage"></div><div class="form-group"><label>ডিসকাউন্ট %</label><input type="number" id="prodDiscount" value="0"></div><div class="form-group"><label><input type="checkbox" id="prodIsCombo"> কম্বো প্যাক</label></div><div class="form-group" id="comboPriceGroup" style="display:none;"><label>কম্বো মূল্য</label><input type="number" id="prodComboPrice"></div><button id="addProductBtn" class="submit-btn">যোগ করুন</button></div><div id="tabList" class="tab-content"><div id="restaurantProductsList"></div><button id="resetDefaultMenuBtn" class="submit-btn" style="background:#747d8c;">ডিফল্ট রিস্টোর</button></div><button id="closeRestaurantPanelBtn" class="submit-btn" style="background:#6c5ce7; margin-top:15px;">বন্ধ করুন</button></div></div>
 
-<!-- ADMIN PANEL -->
-<div class="page-admin-panel" id="adminPanelPage">
-    <div class="dashboard-layout">
-        <div class="sidebar" id="adminSidebar">
-            <div class="brand">👑 অ্যাডমিন প্যানেল</div>
-            <ul class="sidebar-nav">
-                <li><a href="#" onclick="showAdminSection('dashboard')"><i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ড</a></li>
-                <li><a href="#" onclick="showAdminSection('users')"><i class="fas fa-users"></i> সকল ছাত্র</a></li>
-                <li><a href="#" onclick="showAdminSection('withdrawals')"><i class="fas fa-hand-holding-usd"></i> উইথড্র রিকোয়েস্ট</a></li>
-                <li><a href="#" onclick="showAdminSection('backup')"><i class="fas fa-database"></i> ব্যাকআপ & সিঙ্ক</a></li>
-                <li><a href="#" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> লগআউট</a></li>
-            </ul>
-        </div>
-        <div class="main-content">
-            <div class="dashboard-header"><h5>অ্যাডমিন কন্ট্রোল প্যানেল</h5><span class="badge bg-danger">সম্পূর্ণ অ্যাক্সেস</span></div>
-            <div id="adminContent"></div>
-        </div>
-    </div>
-</div>
+<!-- Rider Login Modal -->
+<div id="riderLoginModal" class="modal-overlay"><div class="modal-card"><h3>রাইডার লগিন</h3><div class="form-group"><label>আইডি (ফোন/ইমেইল)</label><input type="text" id="riderId" placeholder="rider@foodride.com"></div><div class="form-group"><label>পাসওয়ার্ড</label><input type="password" id="riderPassword" placeholder="******"></div><button id="doRiderLoginBtn" class="submit-btn">লগিন করুন</button></div></div>
 
-<footer><div class="container"><small>পাসওয়ার্ড SHA-256 হ্যাশড | ডাটা গুগল শীটে সংরক্ষিত</small></div></footer>
-<div class="toast-custom" id="toastMsg">✅ সফল!</div>
+<!-- Rider Panel Modal -->
+<div id="riderPanelModal" class="modal-overlay"><div class="modal-card"><h3><i class="fas fa-motorcycle"></i> রাইডার প্যানেল</h3><div class="rider-tabs"><button class="rider-tab active" data-rtab="available">🚚 উপলব্ধ অর্ডার</button><button class="rider-tab" data-rtab="my">📦 আমার অর্ডার</button></div><div id="availableOrdersList" class="tab-content active">লোডিং...</div><div id="myOrdersList" class="tab-content">লোডিং...</div><button id="closeRiderPanelBtn" class="submit-btn" style="background:#6c5ce7;">বন্ধ করুন</button></div></div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ==================== YOUR GOOGLE APPS SCRIPT URL (UPDATED) ====================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeW7tOqLBv-nXmD9-6C9cw7G677apE8tMzJ2DmPCS5MqhdZTR1yUCJOpKVsWNh8wA9yg/exec";
-
-let currentStudent = null;
-let currentAdmin = null;
-
-function showToast(msg, isErr = false) {
-    let t = $('#toastMsg');
-    t.text(msg).css('background', isErr ? '#dc2626' : '#10b981').addClass('show');
-    setTimeout(() => t.removeClass('show'), 3000);
-}
-
-function hashPassword(pwd) { return CryptoJS.SHA256(pwd).toString(); }
-
-// Page routing
-const pages = { home:'homePage', 'student-login':'studentLoginPage', 'student-signup':'studentSignupPage', 'admin-login':'adminLoginPage', 'student-dashboard':'studentDashboardPage', 'admin-panel':'adminPanelPage' };
-function showPage(pKey) {
-    Object.keys(pages).forEach(k => document.getElementById(pages[k]).classList.remove('active-page'));
-    document.getElementById(pages[pKey]).classList.add('active-page');
-    document.getElementById('mainHeader').style.display = (pKey==='student-dashboard'||pKey==='admin-panel')?'none':'flex';
-    if(pKey==='student-dashboard' && currentStudent) renderStudentDashboard();
-    if(pKey==='admin-panel' && currentAdmin) renderAdminDashboard();
-}
-
-// ==================== SIGNUP (NOW CONNECTED TO GOOGLE SHEET) ====================
-$('#signupForm').submit(async function(e) {
-    e.preventDefault();
-    const name = $('#signupName').val().trim();
-    const email = $('#signupEmail').val().trim();
-    const pwd = $('#signupPassword').val().trim();
-    const refCode = $('#refCode').val().trim().toUpperCase();
-    if(!name || !email || !pwd) { showToast('সব ঘর পূরণ করুন', true); return; }
-    const passwordHash = hashPassword(pwd);
-    const referralCode = name.substring(0,3).toUpperCase() + Math.floor(Math.random()*10000);
-    try {
-        const res = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'register', name, email, passwordHash, referralCode, referredBy: refCode || null })
-        }).then(r=>r.json());
-        if(res.status === 'success') { 
-            showToast('নিবন্ধন সফল! এখন লগইন করুন।');
-            showPage('student-login');
-        } else {
-            showToast(res.message || 'ইমেইল ইতিমধ্যে বিদ্যমান', true);
-        }
-    } catch(err) { 
-        console.error(err);
-        showToast('সার্ভার সংযোগ ব্যর্থ। গুগল স্ক্রিপ্ট URL চেক করুন।', true); 
-    }
-});
-
-// ==================== STUDENT LOGIN ====================
-$('#loginForm').submit(async function(e) {
-    e.preventDefault();
-    const email = $('#loginEmail').val().trim();
-    const pwd = $('#loginPassword').val().trim();
-    const passwordHash = hashPassword(pwd);
-    try {
-        const res = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'login', email, passwordHash })
-        }).then(r=>r.json());
-        if(res.status === 'success') {
-            currentStudent = res.student;
-            showPage('student-dashboard');
-            renderStudentDashboard();
-        } else {
-            showToast('ভুল ইমেইল বা পাসওয়ার্ড', true);
-        }
-    } catch(err) { showToast('লগইন ব্যর্থ', true); }
-});
-
-// ==================== STUDENT DASHBOARD ====================
-function renderStudentDashboard() {
-    if(!currentStudent) return;
-    const active = currentStudent.activated;
-    $('#welcomeName').text(`স্বাগতম, ${currentStudent.name}`);
-    $('#activationBadge').html(active ? '<span class="badge-activated">✅ সক্রিয়</span>' : '<span class="badge-inactive">🔴 নিষ্ক্রিয়</span>');
-    if(active) $('#activationBanner').hide(); else $('#activationBanner').show();
-    $('#activateBtn').off('click').on('click', async function() {
-        if(currentStudent.activated) return;
-        currentStudent.activated = true;
-        await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'updateUser', email: currentStudent.email, activated: true })
-        });
-        showToast('আইডি অ্যাক্টিভেট হয়েছে!');
-        currentStudent.activated = true;
-        renderStudentDashboard();
-    });
-    showStudentSection('home');
-}
-
-window.showStudentSection = function(section) {
-    const container = $('#studentContent');
-    if(section === 'home') {
-        container.html(`<div class="card"><div class="card-body"><h4>হোম</h4><p>আপনার মোট আয়: <strong>${currentStudent.earnings}</strong> টাকা<br>রেফারেল কোড: <code>${currentStudent.referralCode}</code></p></div></div>`);
-    } else if(section === 'profile') {
-        container.html(`<div class="card"><div class="card-body"><h5>প্রোফাইল</h5><p><strong>নাম:</strong> ${currentStudent.name}<br><strong>ইমেইল:</strong> ${currentStudent.email}<br><strong>রেফারেল কোড:</strong> ${currentStudent.referralCode}<br><strong>আয়:</strong> ${currentStudent.earnings} টাকা<br><strong>স্ট্যাটাস:</strong> ${currentStudent.activated ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</p></div></div>`);
-    } else if(section === 'courses') {
-        container.html(`<div class="card"><div class="card-body"><h5>আমার কোর্স</h5><div class="course-grid"><div class="course-card"><div class="course-body">গ্রাফিক ডিজাইন</div></div><div class="course-card"><div class="course-body">ডিজিটাল মার্কেটিং</div></div><div class="course-card"><div class="course-body">ডেটা সায়েন্স</div></div><div class="course-card"><div class="course-body">ওয়েব ডেভেলপমেন্ট</div></div></div></div></div>`);
-    } else if(section === 'referral') {
-        let html = `<div class="card"><div class="card-body"><h5>রেফারেল ইতিহাস</h5><table class="table"><thead><tr><th>রেফারেল</th><th>বোনাস (টাকা)</th></tr></thead><tbody>`;
-        if(currentStudent.referredUsers && currentStudent.referredUsers.length) {
-            currentStudent.referredUsers.forEach(r => {
-                const bonus = (r.earnedAmount||1) + (r.activationBonusEarned||0);
-                html += `<tr><td>${r.name || r.email}</td><td>${bonus}</td></tr>`;
+    // ======================== আপনার গুগল অ্যাপস স্ক্রিপ্ট URL ========================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwLoL8TBUar1phweP1UMDJ2TT9FJN2tzXbs7en6ivKYgIm_vMmMmQ9raNNSnsU8XMnY/exec";
+    
+    async function callBackend(action, data = {}) {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, ...data })
             });
-        } else html += `<tr><td colspan="2">কোনো রেফারেল নেই</td></tr>`;
-        html += `</tbody></table><hr><p><strong>আপনার রেফারেল কোড:</strong> <code>${currentStudent.referralCode}</code> <button id="copyRefBtn" class="btn btn-sm btn-primary">কপি</button></p></div></div>`;
-        container.html(html);
-        $('#copyRefBtn').click(() => { navigator.clipboard.writeText(currentStudent.referralCode); showToast('কোড কপি!'); });
-    } else if(section === 'withdraw') {
-        container.html(`<div class="card"><div class="card-body"><h5>উইথড্র করুন</h5><form id="withdrawForm"><select class="form-select mb-2" id="method"><option>bkash</option><option>nagad</option><option>rocket</option></select><input type="number" id="amount" class="form-control mb-2" placeholder="পরিমাণ (ন্যূনতম ১০০)"><input type="text" id="account" class="form-control mb-2" placeholder="মোবাইল নম্বর"><button class="btn btn-warning">রিকোয়েস্ট পাঠান</button></form></div></div>`);
-        $('#withdrawForm').submit(async function(e) {
-            e.preventDefault();
-            const amount = parseInt($('#amount').val());
-            const method = $('#method').val();
-            const account = $('#account').val();
-            if(amount < 100) showToast('ন্যূনতম ১০০ টাকা', true);
-            else if(amount > currentStudent.earnings) showToast('ব্যালেন্স কম', true);
-            else if(!account) showToast('মোবাইল নম্বর দিন', true);
-            else {
-                const payload = { action: 'addWithdraw', id: Date.now(), studentEmail: currentStudent.email, amount, method, accountNo: account, date: new Date().toLocaleString() };
-                const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r=>r.json());
-                if(res.status === 'success') showToast('রিকোয়েস্ট পাঠানো হয়েছে');
-                else showToast('ব্যর্থ', true);
+            return await response.json();
+        } catch (err) {
+            console.error(err);
+            showToast("ব্যাকএন্ড সংযোগ সমস্যা! চেক করুন URL", true);
+            return { success: false, error: err.message };
+        }
+    }
+    
+    // ======================== গ্লোবাল স্টেট ========================
+    let currentUser = null;
+    let cart = [];
+    let selectedPayment = null;
+    let deliveryAddress = "";
+    let currentOrder = null;
+    let restaurantAuth = null;
+    let riderAuth = null;
+    
+    function showToast(msg, isErr = false) {
+        let toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.style.background = isErr ? '#e84118' : '#2f3542';
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 2500);
+    }
+    
+    // ======================== মেনু লোড ========================
+    async function loadMenuAndRender() {
+        let res = await callBackend('getMenu');
+        if (res.success) {
+            renderMenu(res.menu, res.openTime, res.closeTime);
+        } else {
+            showToast("মেনু লোড করতে ব্যর্থ", true);
+        }
+    }
+    
+    function renderMenu(menuItems, openTime, closeTime) {
+        let grid = document.getElementById('foodGrid');
+        if (!grid) return;
+        let now = new Date();
+        let current = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        let isOpen = current >= openTime && current <= closeTime;
+        let banner = document.getElementById('restaurantStatusBanner');
+        if (!isOpen) {
+            banner.style.display = 'block';
+            banner.innerHTML = `<i class="fas fa-clock"></i> রেস্তোরাঁ বন্ধ (খোলা ${openTime} - ${closeTime})`;
+        } else {
+            banner.style.display = 'none';
+        }
+        grid.innerHTML = '';
+        menuItems.forEach(item => {
+            let finalPrice = item.price;
+            let oldPrice = null;
+            if (item.discount && item.discount > 0) {
+                finalPrice = item.price - (item.price * item.discount / 100);
+                oldPrice = item.price;
             }
+            if (item.isCombo && item.comboPrice) {
+                finalPrice = item.comboPrice;
+                oldPrice = item.price;
+            }
+            let priceHtml = `<span class="new-price">৳ ${Math.floor(finalPrice)}</span>`;
+            if (oldPrice) priceHtml += `<span class="old-price">৳ ${oldPrice}</span>`;
+            let badgeHtml = item.isCombo ? `<span class="combo-badge"><i class="fas fa-layer-group"></i> কম্বো</span>` : (item.discount > 0 ? `<span class="combo-badge" style="background:#27ae60;">-${item.discount}%</span>` : '');
+            grid.innerHTML += `
+                <div class="food-card">
+                    <img src="${item.img}" class="food-img" onerror="this.src='https://via.placeholder.com/300?text=Food'">
+                    <div class="food-info">
+                        <h3>${item.name} ${badgeHtml}</h3>
+                        <div class="price">${priceHtml}</div>
+                        <button class="order-btn" data-id="${item.id}" data-name="${item.name}" data-price="${Math.floor(finalPrice)}"><i class="fas fa-cart-plus"></i> অর্ডার</button>
+                    </div>
+                </div>
+            `;
+        });
+        document.querySelectorAll('.order-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!isOpen) { showToast("রেস্তোরাঁ বন্ধ!", true); return; }
+                let id = btn.dataset.id;
+                let name = btn.dataset.name;
+                let price = parseInt(btn.dataset.price);
+                addToCart(id, name, price);
+            });
         });
     }
-};
-
-// ==================== ADMIN LOGIN & PANEL ====================
-$('#adminLoginForm').submit(function(e) {
-    e.preventDefault();
-    const email = $('#adminEmail').val().trim();
-    const pwd = $('#adminPassword').val().trim();
-    if(email === 'admin@eduzone.com' && pwd === 'admin123') {
-        currentAdmin = { email };
-        showPage('admin-panel');
-        renderAdminDashboard();
-    } else showToast('ভুল অ্যাডমিন তথ্য', true);
-});
-
-async function renderAdminDashboard() {
-    const usersRes = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getAllUsers' }) }).then(r=>r.json()).catch(()=>({users:[]}));
-    const withdrawRes = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getWithdrawals' }) }).then(r=>r.json()).catch(()=>({withdrawals:[]}));
-    const users = usersRes.users || [];
-    const pending = (withdrawRes.withdrawals || []).filter(w=>w.status==='pending').length;
-    const totalEarnings = users.reduce((s,u)=>s+u.earnings,0);
-    const html = `<div class="row"><div class="col-md-4"><div class="stat-card"><h3>${users.length}</h3><p>মোট ছাত্র</p></div></div><div class="col-md-4"><div class="stat-card"><h3>${totalEarnings}</h3><p>মোট আয় (টাকা)</p></div></div><div class="col-md-4"><div class="stat-card"><h3>${pending}</h3><p>পেন্ডিং উইথড্র</p></div></div></div>`;
-    $('#adminContent').html(html);
-    showAdminSection('dashboard');
-}
-
-window.showAdminSection = async function(section) {
-    if(section === 'dashboard') {
-        $('#adminContent').html(`<div class="card"><div class="card-body"><h5>অ্যাডমিন ড্যাশবোর্ড</h5><p>বাম মেনু থেকে পরিচালনা করুন।</p></div></div>`);
-    } else if(section === 'users') {
-        const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getAllUsers' }) }).then(r=>r.json());
-        const users = res.users || [];
-        let table = `<div class="card"><div class="card-body"><h5>সকল ছাত্র</h5><div class="table-responsive"><table class="table table-bordered"><thead><tr><th>নাম</th><th>ইমেইল</th><th>স্ট্যাটাস</th><th>আয়</th><th>অ্যাকশন</th></tr></thead><tbody>`;
-        users.forEach(u => {
-            table += `<tr><td>${u.name}${u.isAdmin?' (অ্যাডমিন)':''}${u.isAdmin?'':''}</td><td>${u.email}</td><td>${u.activated ? '✅ সক্রিয়' : '🔴 নিষ্ক্রিয়'}</td><td>${u.earnings}</td>
-            <td><button class="btn btn-sm btn-danger" onclick="deleteUser('${u.email}')">ডিলিট</button>
-            <button class="btn btn-sm btn-success" onclick="toggleActivation('${u.email}')">টগল</button> </div>`;
-        });
-        table += `</tbody></table></div></div></div>`;
-        $('#adminContent').html(table);
-    } else if(section === 'withdrawals') {
-        const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getWithdrawals' }) }).then(r=>r.json());
-        const withdrawals = res.withdrawals || [];
-        let list = `<div class="card"><div class="card-body"><h5>পেন্ডিং উইথড্র রিকোয়েস্ট</h5><ul class="list-group">`;
-        withdrawals.filter(w=>w.status==='pending').forEach(w => {
-            list += `<li class="list-group-item d-flex justify-content-between">${w.studentEmail} - ${w.amount} টাকা (${w.method})
-            <div><button class="btn btn-sm btn-success" onclick="approveWithdraw('${w.id}')">অ্যাপ্রুভ</button>
-            <button class="btn btn-sm btn-danger" onclick="rejectWithdraw('${w.id}')">রিজেক্ট</button></div></li>`;
-        });
-        list += `</ul></div></div>`;
-        $('#adminContent').html(list);
-    } else if(section === 'backup') {
-        $('#adminContent').html(`<div class="card"><div class="card-body"><h5>গুগল শীট ব্যাকআপ</h5><button id="syncBtn" class="btn btn-success">সমস্ত ডাটা শীটে সিঙ্ক করুন</button> <button id="restoreBtn" class="btn btn-warning ms-2">শীট থেকে রিস্টোর</button><div id="syncMsg" class="mt-2"></div></div></div>`);
-        $('#syncBtn').click(async () => {
-            const usersRes = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getAllUsers' }) }).then(r=>r.json());
-            const withdrawRes = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getWithdrawals' }) }).then(r=>r.json());
-            const payload = { action: 'syncAll', students: usersRes.users || [], withdrawals: withdrawRes.withdrawals || [] };
-            const result = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r=>r.json());
-            showToast(result.status === 'success' ? 'সিঙ্ক সম্পন্ন' : 'সিঙ্ক ব্যর্থ', result.status !== 'success');
-        });
-        $('#restoreBtn').click(() => showToast('রিস্টোর ফাংশন ব্যাকএন্ডে যুক্ত করুন', true));
+    
+    // ======================== কার্ট ফাংশন ========================
+    function addToCart(id, name, price) {
+        if (!currentUser) { showToast("অর্ডার করতে লগইন করুন (উপরের ইউজার আইকনে ক্লিক করুন)", true); return; }
+        let exist = cart.find(i => i.id == id);
+        if (exist) exist.quantity++;
+        else cart.push({ id, name, price, quantity: 1 });
+        saveCartToLocal();
+        updateCartUI();
+        showToast(`${name} কার্টে যোগ হয়েছে`);
     }
-};
-
-// Admin actions
-window.deleteUser = async function(email) {
-    if(!confirm('ছাত্র ডিলিট করবেন?')) return;
-    const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'deleteUser', email }) }).then(r=>r.json());
-    if(res.status === 'success') { showToast('ডিলিট হয়েছে'); showAdminSection('users'); }
-    else showToast('ব্যর্থ', true);
-};
-window.toggleActivation = async function(email) {
-    const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'updateUser', email, activated: true }) }).then(r=>r.json());
-    if(res.status === 'success') { showToast('স্ট্যাটাস পরিবর্তিত'); showAdminSection('users'); }
-};
-window.approveWithdraw = async function(id) {
-    const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'updateWithdraw', id, status: 'approved' }) }).then(r=>r.json());
-    if(res.status === 'success') { showToast('অ্যাপ্রুভড'); showAdminSection('withdrawals'); }
-};
-window.rejectWithdraw = async function(id) {
-    const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'updateWithdraw', id, status: 'rejected' }) }).then(r=>r.json());
-    if(res.status === 'success') { showToast('রিজেক্টেড'); showAdminSection('withdrawals'); }
-};
-
-// ==================== LOGOUT & MOBILE ====================
-$('#studentLogoutBtn').click(() => { currentStudent = null; showPage('home'); });
-$('#adminLogoutBtn').click(() => { currentAdmin = null; showPage('home'); });
-$('[data-page]').click(function(e) { e.preventDefault(); showPage($(this).data('page')); });
-$('.nav-link').click(function(e) { if($(this).data('page')) { e.preventDefault(); showPage($(this).data('page')); } });
-let mobileOpen = false;
-$('#mobileMenuToggle').click(() => { $('.sidebar').toggleClass('mobile-open'); mobileOpen = !mobileOpen; });
-$(document).click(function(e) { if(mobileOpen && !$(e.target).closest('.sidebar, #mobileMenuToggle').length) { $('.sidebar').removeClass('mobile-open'); mobileOpen = false; } });
-showPage('home');
+    function saveCartToLocal() { if (currentUser) localStorage.setItem(`cart_${currentUser.email}`, JSON.stringify(cart)); }
+    function loadCartFromLocal() { if (currentUser) { let saved = localStorage.getItem(`cart_${currentUser.email}`); cart = saved ? JSON.parse(saved) : []; } else cart = []; updateCartUI(); }
+    function updateCartUI() {
+        let container = document.getElementById('cartItemsContainer');
+        let totalSpan = document.getElementById('cartTotalPrice');
+        let badge = document.getElementById('cartCount');
+        if (cart.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px;">🛒 খালি</div>'; totalSpan.innerText = '০ ৳'; badge.innerText = '0'; return; }
+        let total = 0, totalItems = 0, html = '';
+        cart.forEach(item => { let amt = item.price * item.quantity; total += amt; totalItems += item.quantity; html += `<div style="display:flex; justify-content:space-between; background:#f1f2f6; margin-bottom:12px; padding:12px; border-radius:16px;"><div><strong>${item.name}</strong><br>${item.price} ৳ x ${item.quantity} = ${amt} ৳</div><div><button class="cart-qty" data-id="${item.id}" data-delta="-1">-</button> <span>${item.quantity}</span> <button class="cart-qty" data-id="${item.id}" data-delta="1">+</button> <button class="cart-remove" data-id="${item.id}"><i class="fas fa-trash"></i></button></div></div>`; });
+        container.innerHTML = html; totalSpan.innerText = `${total} ৳`; badge.innerText = totalItems;
+        document.querySelectorAll('.cart-qty').forEach(btn => { btn.addEventListener('click', (e) => { let id = btn.dataset.id, delta = parseInt(btn.dataset.delta); let idx = cart.findIndex(i => i.id == id); if (idx !== -1) { cart[idx].quantity += delta; if (cart[idx].quantity <= 0) cart.splice(idx, 1); saveCartToLocal(); updateCartUI(); } }); });
+        document.querySelectorAll('.cart-remove').forEach(btn => { btn.addEventListener('click', () => { let id = btn.dataset.id; cart = cart.filter(i => i.id != id); saveCartToLocal(); updateCartUI(); showToast("আইটেম সরানো হয়েছে"); }); });
+    }
+    
+    // ======================== অর্ডার ফ্লো ========================
+    function openPaymentModal() { if (cart.length === 0) { showToast("কার্টে খাবার যোগ করুন", true); return; } if (!currentUser) { showToast("লগইন করুন", true); return; } document.getElementById('paymentModal').classList.add('active'); }
+    function selectPaymentMethod(method) { selectedPayment = method; document.querySelectorAll('.payment-option').forEach(opt => { if (opt.innerText.includes(method)) opt.style.borderColor = '#ff4757'; else opt.style.borderColor = '#ddd'; }); }
+    function nextToLocation() { if (!selectedPayment) { showToast("পেমেন্ট নির্বাচন করুন", true); return; } document.getElementById('paymentModal').classList.remove('active'); document.getElementById('locationModal').classList.add('active'); }
+    function getCurrentLocation() { navigator.geolocation.getCurrentPosition(pos => { fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&zoom=18`).then(res => res.json()).then(data => { document.getElementById('manualAddress').value = data.display_name || "জিপিএস লোকেশন"; }); }, () => showToast("জিপিএস অনুমতি দিন", true)); }
+    async function confirmOrder() {
+        let addr = document.getElementById('manualAddress').value.trim();
+        if (!addr) { showToast("ঠিকানা দিন", true); return; }
+        let total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+        let orderId = "FD" + Date.now() + Math.floor(Math.random() * 10000);
+        let orderData = {
+            orderId, customerName: currentUser.name, customerId: currentUser.email,
+            items: JSON.stringify(cart.map(i => ({ name: i.name, qty: i.quantity, price: i.price }))),
+            total, paymentMethod: selectedPayment, deliveryAddress: addr,
+            status: "pending", restaurantApproved: false, riderName: "", createdAt: new Date().toISOString()
+        };
+        let res = await callBackend('placeOrder', { order: orderData });
+        if (res.success) {
+            cart = []; saveCartToLocal(); updateCartUI();
+            document.getElementById('locationModal').classList.remove('active');
+            document.getElementById('cartSidebar').classList.remove('open');
+            showToast("অর্ডার প্লেস হয়েছে! রেস্তোরাঁ অ্যাপ্রুভের অপেক্ষায়", false);
+            currentOrder = orderData;
+            showTrackingModal(orderData);
+        } else { showToast("অর্ডার失敗", true); }
+    }
+    function showTrackingModal(order) { let modal = document.getElementById('trackingModal'); modal.classList.add('active'); document.getElementById('orderStatusContainer').innerHTML = `<div>অর্ডার আইডি: ${order.orderId}<br>স্ট্যাটাস: ${order.status}</div>`; }
+    
+    // ======================== রেস্তোরাঁ লগিন ও প্যানেল ========================
+    document.getElementById('restaurantPanelBtn').addEventListener('click', () => { document.getElementById('restaurantLoginModal').classList.add('active'); });
+    document.getElementById('doRestaurantLoginBtn').addEventListener('click', async () => {
+        let id = document.getElementById('restaurantId').value;
+        let pass = document.getElementById('restaurantPassword').value;
+        let res = await callBackend('restaurantLogin', { id, pass });
+        if (res.success) {
+            restaurantAuth = res.user;
+            document.getElementById('restaurantLoginModal').classList.remove('active');
+            document.getElementById('restaurantPanelModal').classList.add('active');
+            loadRestaurantData();
+        } else { showToast("লগিন ব্যর্থ", true); }
+    });
+    async function loadRestaurantData() {
+        let res = await callBackend('getRestaurantData', { restaurantId: restaurantAuth.id });
+        if (res.success) {
+            document.getElementById('openTimeInput').value = res.openTime;
+            document.getElementById('closeTimeInput').value = res.closeTime;
+            refreshRestaurantOrders();
+            refreshProductList(res.menu);
+        }
+    }
+    async function refreshRestaurantOrders() {
+        let res = await callBackend('getOrders', { status: 'pending' });
+        if (res.success) {
+            let container = document.getElementById('restaurantOrdersList');
+            if (res.orders.length === 0) container.innerHTML = '<p>কোনো অর্ডার নেই</p>';
+            else {
+                let html = '';
+                res.orders.forEach(o => {
+                    html += `<div style="border:1px solid #ddd; border-radius:20px; padding:12px; margin-bottom:12px;"><b>${o.orderId}</b> - ${o.customerName}<br>আইটেম: ${o.items}<br>মোট: ৳${o.total}<br><button class="approveBtn" data-id="${o.orderId}" style="background:#2ed573; border:none; padding:8px 20px; border-radius:40px;">অ্যাপ্রুভ করুন</button></div>`;
+                });
+                container.innerHTML = html;
+                document.querySelectorAll('.approveBtn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        let orderId = btn.dataset.id;
+                        let appRes = await callBackend('approveOrder', { orderId });
+                        if (appRes.success) { showToast("অর্ডার অ্যাপ্রুভ করা হয়েছে"); refreshRestaurantOrders(); }
+                    });
+                });
+            }
+        }
+    }
+    async function refreshProductList(menu) {
+        let container = document.getElementById('restaurantProductsList');
+        if (!menu) menu = (await callBackend('getMenu')).menu;
+        let html = '<ul>';
+        menu.forEach(p => { html += `<li>${p.name} - ৳${p.price} ${p.discount ? `(${p.discount}% off)` : ''} ${p.isCombo ? '🔥কম্বো' : ''}</li>`; });
+        html += '</ul>';
+        container.innerHTML = html;
+    }
+    document.getElementById('addProductBtn').addEventListener('click', async () => {
+        let product = {
+            id: Date.now(), name: document.getElementById('prodName').value, price: parseInt(document.getElementById('prodPrice').value),
+            img: document.getElementById('prodImage').value, discount: parseInt(document.getElementById('prodDiscount').value) || 0,
+            isCombo: document.getElementById('prodIsCombo').checked, comboPrice: document.getElementById('prodIsCombo').checked ? parseInt(document.getElementById('prodComboPrice').value) : null
+        };
+        if (!product.name || !product.price || !product.img) { showToast("সব তথ্য দিন", true); return; }
+        let res = await callBackend('addProduct', { product });
+        if (res.success) { showToast("প্রোডাক্ট যোগ হয়েছে"); loadMenuAndRender(); refreshProductList(res.menu); }
+    });
+    document.getElementById('saveTimeBtn').addEventListener('click', async () => {
+        let open = document.getElementById('openTimeInput').value, close = document.getElementById('closeTimeInput').value;
+        let res = await callBackend('updateRestaurantTime', { openTime: open, closeTime: close });
+        if (res.success) showToast("সময় আপডেট হয়েছে");
+    });
+    document.getElementById('resetDefaultMenuBtn').addEventListener('click', async () => {
+        let res = await callBackend('resetDefaultMenu');
+        if (res.success) { showToast("ডিফল্ট মেনু রিস্টোর"); loadMenuAndRender(); refreshProductList(res.menu); }
+    });
+    
+    // ======================== রাইডার লগিন ও প্যানেল ========================
+    document.getElementById('riderPanelBtn').addEventListener('click', () => { document.getElementById('riderLoginModal').classList.add('active'); });
+    document.getElementById('doRiderLoginBtn').addEventListener('click', async () => {
+        let id = document.getElementById('riderId').value, pass = document.getElementById('riderPassword').value;
+        let res = await callBackend('riderLogin', { id, pass });
+        if (res.success) { riderAuth = res.user; document.getElementById('riderLoginModal').classList.remove('active'); document.getElementById('riderPanelModal').classList.add('active'); refreshRiderOrders(); }
+        else showToast("রাইডার লগিন ব্যর্থ", true);
+    });
+    async function refreshRiderOrders() {
+        let available = await callBackend('getOrders', { status: 'restaurant_approved' });
+        let myOrders = await callBackend('getOrders', { riderId: riderAuth.id });
+        let availHtml = available.orders.length === 0 ? '<p>কোনো অর্ডার নেই</p>' : '';
+        available.orders.forEach(o => { availHtml += `<div style="border:1px solid #ddd; border-radius:20px; padding:12px; margin-bottom:12px;"><b>${o.orderId}</b> - ${o.customerName}<br>ঠিকানা: ${o.deliveryAddress}<br><button class="takeOrderBtn" data-id="${o.orderId}" style="background:#27ae60; border:none; padding:8px 20px; border-radius:40px;">অর্ডার নিন</button></div>`; });
+        document.getElementById('availableOrdersList').innerHTML = availHtml;
+        document.querySelectorAll('.takeOrderBtn').forEach(btn => { btn.addEventListener('click', async () => { let res = await callBackend('assignRider', { orderId: btn.dataset.id, riderId: riderAuth.id, riderName: riderAuth.name }); if (res.success) { showToast("অর্ডার নেওয়া হয়েছে"); refreshRiderOrders(); } }); });
+        let myHtml = myOrders.orders.length === 0 ? '<p>কোনো অর্ডার নেই</p>' : '';
+        myOrders.orders.forEach(o => { myHtml += `<div>${o.orderId} - ${o.status}</div>`; });
+        document.getElementById('myOrdersList').innerHTML = myHtml;
+    }
+    
+    // ======================== কাস্টমার লগিন (ডেমো) ========================
+    document.getElementById('userWelcomeArea').addEventListener('click', () => {
+        let name = prompt("আপনার নাম দিন (ডেমো লগইন):", "ফুডপ্রেমী");
+        if (name) { currentUser = { name, email: name + "@food.com" }; localStorage.setItem('foodride_logged_user', JSON.stringify(currentUser)); document.getElementById('displayUserName').innerText = name; loadCartFromLocal(); showToast(`স্বাগতম ${name}`); }
+    });
+    
+    // ======================== ইভেন্ট লিসেনার ========================
+    document.getElementById('cartIcon').addEventListener('click', () => { document.getElementById('cartSidebar').classList.add('open'); });
+    document.getElementById('closeCartBtn').addEventListener('click', () => { document.getElementById('cartSidebar').classList.remove('open'); });
+    document.getElementById('proceedToPaymentBtn').addEventListener('click', openPaymentModal);
+    document.querySelectorAll('.payment-option').forEach(opt => { opt.addEventListener('click', () => selectPaymentMethod(opt.innerText.trim())); });
+    document.getElementById('nextToLocationBtn').addEventListener('click', nextToLocation);
+    document.getElementById('getGpsBtn').addEventListener('click', getCurrentLocation);
+    document.getElementById('confirmLocationBtn').addEventListener('click', confirmOrder);
+    document.getElementById('closeTrackingBtn').addEventListener('click', () => { document.getElementById('trackingModal').classList.remove('active'); });
+    document.getElementById('closeRestaurantPanelBtn').addEventListener('click', () => { document.getElementById('restaurantPanelModal').classList.remove('active'); });
+    document.getElementById('closeRiderPanelBtn').addEventListener('click', () => { document.getElementById('riderPanelModal').classList.remove('active'); });
+    window.searchFood = () => { let loc = document.getElementById('locationInput').value; showToast(loc ? `"${loc}" তে ডেলিভারি আছে` : "লোকেশন দিন"); };
+    document.getElementById('prodIsCombo').addEventListener('change', (e) => { document.getElementById('comboPriceGroup').style.display = e.target.checked ? 'block' : 'none'; });
+    
+    // ট্যাব স্যুইচ
+    document.querySelectorAll('.restaurant-tab').forEach(tab => { tab.addEventListener('click', () => { document.querySelectorAll('.restaurant-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); document.querySelectorAll('#restaurantPanelModal .tab-content').forEach(c => c.classList.remove('active')); document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active'); if (tab.dataset.tab === 'list') refreshProductList(); }); });
+    document.querySelectorAll('.rider-tab').forEach(tab => { tab.addEventListener('click', () => { document.querySelectorAll('.rider-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); if (tab.dataset.rtab === 'available') { document.getElementById('availableOrdersList').classList.add('active'); document.getElementById('myOrdersList').classList.remove('active'); refreshRiderOrders(); } else { document.getElementById('myOrdersList').classList.add('active'); document.getElementById('availableOrdersList').classList.remove('active'); refreshRiderOrders(); } }); });
+    
+    // প্রথমবার মেনু লোড
+    loadMenuAndRender();
+    if (localStorage.getItem('foodride_logged_user')) { currentUser = JSON.parse(localStorage.getItem('foodride_logged_user')); document.getElementById('displayUserName').innerText = currentUser.name; loadCartFromLocal(); }
 </script>
 </body>
 </html>
